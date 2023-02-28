@@ -28,7 +28,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: url("images/bacground.jpg") center no-repeat;
+  background: url("images/background.jpg") center no-repeat;
   background-size: cover;
 }
 
@@ -180,7 +180,7 @@ body {
 
 .not-found img {
   width: 70%;
-  
+
 }
 
 .not-found p {
