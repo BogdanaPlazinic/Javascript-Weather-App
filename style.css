@@ -32,24 +32,12 @@ body {
   background-size: cover;
 }
 
-.weather-text {
-  position: absolute;
-  bottom: 2%;
-}
-
-.weather-text h1 {
-  font-family: var(--ff);
-  color: var(--primary-clr);
-  font-size: calc(var(--f-size-medium) + 1rem);
-}
-
-
 .container {
   position: relative;
   width: 25rem;
   height: 6.5rem;
   background: var(--bacground-clr);
-  padding: 1.7rem 2rem;
+  padding: 1.7rem .7rem;
   overflow: hidden;
   border-radius: 1rem;
   font-family: var(--ff);
@@ -62,6 +50,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: .3rem;
 }
 
 .search-box input {
@@ -105,6 +94,7 @@ body {
   font-size: var(--f-size-medium);
   color: var(--primary-clr);
 }
+
 
 .weather-box {
   text-align: center;
@@ -221,6 +211,11 @@ body {
 @media (max-width: 400px) {
   .container {
     width: 20rem;
+  }
+
+  .search-box button {
+    width: 2.5rem;
+    height: 2.5rem;
   }
 
   .weather-details p {

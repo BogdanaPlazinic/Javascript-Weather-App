@@ -4,6 +4,10 @@ const weatherBox = document.querySelector('.weather-box');
 const weatherDetails = document.querySelector('.weather-details');
 const error404 = document.querySelector('.not-found');
 
+const storageInput = document.querySelector('.storage');
+const favoriteBtn = document.querySelector('#favorite-btn');
+const storedInput =  localStorage.getItem('city');
+
 search.addEventListener('click', () => {
 
     const APIKey = 'e7786d307582fc074893def0f1b1d854';
@@ -74,4 +78,23 @@ search.addEventListener('click', () => {
         });
 
 
+
 });
+
+
+if (storageInput) {
+    localStorage.city = storedInput
+}
+
+storageInput.addEventListener('input', letter => {
+    localStorage.city = letter.target.value //city = key for localStorage
+})
+
+
+const saveToLocalStorage = () => {
+    localStorage.setItem('city', localStorage.city);
+}
+
+favoriteBtn.addEventListener('click', saveToLocalStorage);
+
+
