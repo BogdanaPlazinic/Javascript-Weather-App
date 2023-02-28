@@ -1,100 +1,92 @@
-const container = document.querySelector('.container');
-const search = document.querySelector('.search-box button');
-const weatherBox = document.querySelector('.weather-box');
-const weatherDetails = document.querySelector('.weather-details');
-const error404 = document.querySelector('.not-found');
+const container = document.querySelector( '.container' );
+const search = document.querySelector( '.search-box button' );
+const weatherBox = document.querySelector( '.weather-box' );
+const weatherDetails = document.querySelector( '.weather-details' );
+const error404 = document.querySelector( '.not-found' );
 
-const storageInput = document.querySelector('.storage');
-const favoriteBtn = document.querySelector('#favorite-btn');
-const storedInput =  localStorage.getItem('city');
+const image = document.querySelector( '.weather-box img' );
+const temperature = document.querySelector( '.weather-box .temperature' );
+const description = document.querySelector( '.weather-box .description' );
+const humidity = document.querySelector( '.weather-details .humidity span' );
+const wind = document.querySelector( '.weather-details .wind span' );
 
-search.addEventListener('click', () => {
+const storageInput = document.querySelector( '.storage' );
+const favoriteBtn = document.querySelector( '#favorite-btn' );
+const storedLocation = localStorage.getItem( 'weatherLocation' );
+console.log( storageInput )
 
-    const APIKey = 'e7786d307582fc074893def0f1b1d854';
-    const city = document.querySelector('.search-box input').value;
+// Get appropriate icon
+const getIcon = weather => {
+    switch ( weather ) {
+        case 'Clear':
+            return 'images/clear.png';
+        case 'Rain':
+        case 'Drizzle':
+            return 'images/rain.png';
+        case 'Snow':
+            return 'images/snow.png';
+        case 'Clouds':
+            return 'images/cloud.png';
+        case 'Haze':
+        case 'Mist':
+            return 'images/mist.png';
+        default:
+            return '';
+    }
+}
 
-    if (city === '')
+// Fetch location weather
+const fetchWeather = async ( weatherApiUrl ) => {
+    const response = await fetch( weatherApiUrl );
+    const locationWeather = await response.json();
+
+    return locationWeather;
+}
+
+search.addEventListener( 'click', async () => {
+    const apiKey = 'e7786d307582fc074893def0f1b1d854';
+    const city = document.querySelector( '.search-box input' ).value;
+    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${ city }&units=metric&appid=${ apiKey }`;
+
+    let locationWeather = await fetchWeather( apiUrl );
+
+    if ( storedLocation === null || !city.includes( locationWeather.name ) ) {
+        localStorage.setItem( 'weatherLocation', JSON.stringify( locationWeather ) )
+        localStorage.setItem( 'city', city );
+    }
+    else {
+        locationWeather = JSON.parse( storedLocation );
+    }
+
+    if ( locationWeather.cod === '404' || city === '' ) {
+        container.style.height = '400px';
+        weatherBox.style.display = 'none';
+        weatherDetails.style.display = 'none';
+        error404.style.display = 'block';
+        error404.classList.add( 'fadeIn' );
         return;
+    }
 
-    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${APIKey}`)
-        .then(response => response.json())
-        .then(json => {
+    error404.style.display = 'none';
+    error404.classList.remove( 'fadeIn' );
 
-            if (json.cod === '404') {
-                container.style.height = '400px';
-                weatherBox.style.display = 'none';
-                weatherDetails.style.display = 'none';
-                error404.style.display = 'block';
-                error404.classList.add('fadeIn');
-                return;
-            }
+    image.src = getIcon( locationWeather.weather[ 0 ].main );
+    temperature.innerHTML = `${ Math.round( locationWeather.main.temp ) }<span>°C</span>`;
+    description.innerHTML = `${ locationWeather.weather[ 0 ].description }`;
+    humidity.innerHTML = `${ locationWeather.main.humidity }%`;
+    wind.innerHTML = `${ parseInt( locationWeather.wind.speed ) }Km/h`;
 
-            error404.style.display = 'none';
-            error404.classList.remove('fadeIn');
+    weatherBox.style.display = '';
+    weatherDetails.style.display = '';
+    weatherBox.classList.add( 'fadeIn' );
+    weatherDetails.classList.add( 'fadeIn' );
+    container.style.height = '37rem';
+} );
 
-            const image = document.querySelector('.weather-box img');
-            const temperature = document.querySelector('.weather-box .temperature');
-            const description = document.querySelector('.weather-box .description');
-            const humidity = document.querySelector('.weather-details .humidity span');
-            const wind = document.querySelector('.weather-details .wind span');
+document.addEventListener( 'DOMContentLoaded', () => {
+    if ( storedLocation !== null || !storedLocation.includes( '400' ) ) {
+        search.click();
+    }
 
-            switch (json.weather[0].main) {
-                case 'Clear':
-                    image.src = 'images/clear.png';
-                    break;
-
-                case 'Rain':
-                    image.src = 'images/rain.png';
-                    break;
-
-                case 'Snow':
-                    image.src = 'images/snow.png';
-                    break;
-
-                case 'Clouds':
-                    image.src = 'images/cloud.png';
-                    break;
-
-                case 'Haze':
-                    image.src = 'images/mist.png';
-                    break;
-
-                default:
-                    image.src = '';
-            }
-
-            temperature.innerHTML = `${parseInt(json.main.temp)}<span>°C</span>`;
-            description.innerHTML = `${json.weather[0].description}`;
-            humidity.innerHTML = `${json.main.humidity}%`;
-            wind.innerHTML = `${parseInt(json.wind.speed)}Km/h`;
-
-            weatherBox.style.display = '';
-            weatherDetails.style.display = '';
-            weatherBox.classList.add('fadeIn');
-            weatherDetails.classList.add('fadeIn');
-            container.style.height = '37rem';
-
-
-        });
-
-
-
-});
-
-
-if (storageInput) {
-    localStorage.city = storedInput
-}
-
-storageInput.addEventListener('input', letter => {
-    localStorage.city = letter.target.value //city = key for localStorage
-})
-
-
-const saveToLocalStorage = () => {
-    localStorage.setItem('city', localStorage.city);
-}
-
-favoriteBtn.addEventListener('click', saveToLocalStorage);
-
-
+    storageInput.addEventListener( 'change', () => localStorage.removeItem( 'weatherlocation' ) );
+} );
